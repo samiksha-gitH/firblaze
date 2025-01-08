@@ -1,17 +1,11 @@
 import AppError from "../utils/AppError.js"
 import catchAsync from "../middleware/catchAsync.js"
 import User from "../model/User.js"
-import Role from "../model/Role.js"
 
 // *********************************************************************************************************
 
-/**
- * Set JWT token as an HTTP-only cookie.
- * @param {Object} res - The response object.
- * @param {String} token - The JWT token.
- */
 const setCookie = (res, token) => {
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
   res.cookie("token", token, {
     expires: expires,
     httpOnly: true,
@@ -22,12 +16,8 @@ const setCookie = (res, token) => {
 
 // *********************************************************************************************************
 
-/**
- * Register a new user.
- * @route POST /api/v1/auth/register
- */
 const register = catchAsync(async (req, res, next) => {
-  const { name, email, password, role, permissions } = req.body
+  const { name, email, password } = req.body
 
   // Validate input
   if (!name || !email || !password) {
@@ -40,16 +30,8 @@ const register = catchAsync(async (req, res, next) => {
     return next(new AppError("Email already registered", 400))
   }
 
-  // Set default role if not provided
-  const userRole = role || "student"
-
-  const newRole = await Role.create({
-    roleName: role,
-    permissions: permissions,
-  })
-
   // Create the user
-  const user = await User.create({ name, email, password, role: newRole._id })
+  const user = await User.create({ name, email, password })
 
   // Generate JWT and set cookie
   const token = user.createJWT()
@@ -59,17 +41,13 @@ const register = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     message: "User registered successfully",
-    token,
-    user: { name: user.name, email: user.email, role: user.role },
+    token: token,
+    user: { name: user.name, email: user.email },
   })
 })
 
 // *********************************************************************************************************
 
-/**
- * Log in an existing user.
- * @route POST /api/v1/auth/login
- */
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body
 
@@ -79,7 +57,7 @@ const login = catchAsync(async (req, res, next) => {
   }
 
   // Find user by email
-  const user = await User.findOne({ email })
+  const user = await User.findOne({ email }).populate("role")
   if (!user) {
     return next(new AppError("Invalid email or password", 401)) // Generic error
   }
@@ -98,17 +76,11 @@ const login = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     message: "Login successful",
-    token,
+    token: token,
     user: { name: user.name, email: user.email, role: user.role },
   })
 })
 
-// *********************************************************************************************************
-
-/**
- * Log out the user.
- * @route POST /api/v1/auth/logout
- */
 const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
@@ -121,28 +93,5 @@ const logout = (req, res) => {
   })
 }
 
-// *********************************************************************************************************
 
-/**
- * Retrieve the authenticated user's profile.
- * @route GET /api/v1/auth/profile
- */
-const profile = (req, res, next) => {
-  if (!req.user) {
-    return next(new AppError("User not authenticated", 401))
-  }
-
-  res.status(200).json({
-    status: "success",
-    message: "Profile retrieved successfully",
-    data: {
-      name: req.user.name,
-      email: req.user.email,
-      role: req.user.role,
-    },
-  })
-}
-
-// *********************************************************************************************************
-
-export { register, login, logout, profile }
+export { register, login, logout }
