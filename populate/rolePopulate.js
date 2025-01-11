@@ -10,35 +10,44 @@ const roles = [
   },
   {
     _id: "admin",
-    description: "Administrator with all permissions",
+    description: "Administrator with limited permissions",
     permissions: ["view_users", "edit_users", "create_courses"],
   },
   {
-    _id: "instructor", // First instructor role
+    _id: "instructor",
     description: "Can create and manage their own courses",
     permissions: ["create_courses"],
   },
   {
-    _id: "learner", // Changed _id to make it unique
+    _id: "learner",
     description: "Can view courses",
     permissions: ["view_courses"],
   },
 ]
 
-const start = async () => {
+const seedRoles = async () => {
   try {
-    // Connect to the database
     await connectDB(process.env.MONGO_URI_TEST)
 
-    // Insert roles into the database
-    const res = await Role.insertMany(roles)
-    console.log("Roles added", res)
+    for (const role of roles) {
+      try {
+        await Role.create(role)
+        console.log(`Role "${role._id}" added.`)
+      } catch (error) {
+        if (error.code === 11000) {
+          console.log(`Role "${role._id}" already exists.`)
+        } else {
+          throw error
+        }
+      }
+    }
 
+    console.log("Roles seeding completed.")
     process.exit(0)
   } catch (error) {
-    console.error("Error adding roles:", error)
+    console.error("Error seeding roles:", error)
     process.exit(1)
   }
 }
 
-start()
+seedRoles()
