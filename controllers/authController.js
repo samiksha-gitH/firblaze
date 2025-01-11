@@ -1,6 +1,6 @@
-import AppError from "../utils/AppError.js"
-import catchAsync from "../middleware/catchAsync.js"
-import User from "../model/User.js"
+const AppError = require("../utils/AppError.js")
+const catchAsync = require("../middlewares/catchAsync.js")
+const User = require("../models/User.js")
 
 // *********************************************************************************************************
 
@@ -15,7 +15,7 @@ const setCookie = (res, token) => {
 }
 
 // *********************************************************************************************************
-
+// only student register
 const register = catchAsync(async (req, res, next) => {
   const { name, email, password } = req.body
 
@@ -47,7 +47,7 @@ const register = catchAsync(async (req, res, next) => {
 })
 
 // *********************************************************************************************************
-
+// login allowed to everybody
 const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body
 
@@ -93,5 +93,4 @@ const logout = (req, res) => {
   })
 }
 
-
-export { register, login, logout }
+module.exports = { register, login, logout }

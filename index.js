@@ -1,20 +1,19 @@
-import express from "express"
-import connectDB from "./config/db.js"
-import "express-async-errors"
-import dotenv from "dotenv"
-dotenv.config()
-import cors from "cors"
-import cookieParser from "cookie-parser"
-import helmet from "helmet"
-import { rateLimit } from "express-rate-limit"
+const express = require("express")
+const connectDB = require("./config/db.js")
+require("express-async-errors")
+require("dotenv").config()
+const cors = require("cors")
+const cookieParser = require("cookie-parser")
+const helmet = require("helmet")
+const { rateLimit } = require("express-rate-limit")
 
-import errorHandlerMiddleware from "./middleware/errorHandler.js"
-import notFoundMiddleware from "./middleware/notFound.js"
+const errorHandlerMiddleware = require("./middlewares/errorHandler.js")
+const notFoundMiddleware = require("./middlewares/notFound.js")
 
 // routes
-import authRouter from "./route/auth.js"
-import authenticateUser from "./middleware/authentication.js"
-import mongoose from "mongoose"
+const authRouter = require("./routes/authRoutes.js")
+const authenticateUser = require("./middlewares/authentication.js")
+const mongoose = require("mongoose")
 
 // const corsOptions = {
 //   origin: `${process.env.FRONTEND_URL}`, // Frontend's URL

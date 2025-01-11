@@ -2,7 +2,6 @@
   "name": "payement",
   "version": "1.0.0",
   "main": "Payement.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"

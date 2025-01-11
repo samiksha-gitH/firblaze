@@ -1,4 +1,4 @@
-import AppError from "../utils/AppError.js"
+const AppError = require("../utils/AppError.js")
 
 const errorHandler = (err, req, res, next) => {
   // // If the error is an instance of AppError, use its properties
@@ -44,4 +44,4 @@ const errorHandler = (err, req, res, next) => {
   })
 }
 
-export default errorHandler
+module.exports = errorHandler

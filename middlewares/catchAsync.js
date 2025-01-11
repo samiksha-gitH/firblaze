@@ -6,4 +6,4 @@ const catchAsync = (fn) => {
   }
 }
 
-export default catchAsync
+module.exports = catchAsync
