@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs")
+const bcrypt =  require("bcrypt");
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 
@@ -10,10 +10,21 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Please provide password"],
     minlength: [6, "Password must be at least 6 characters long"],
   },
-  role: { type: String, ref: "Role", required: true }, // References Role ID
+  role: {
+    type: String,
+    enum: ["learner", "instructor", "admin", "super-admin"],
+    required: true,
+  }, // References Role ID
+  profilePicture: {
+    type: String,
+    default: 'default.jpg'
+},
   isActive: { type: Boolean, default: true }, // User status (active/inactive)
+  lastLogin: { type: Date },
   createdAt: { type: Date, default: Date.now }, // Timestamp for user creation
-})
+},
+  { timestamps: true, discriminatorKey: "role" }
+);
 
 UserSchema.pre("save", async function () {
   const salt = await bcrypt.genSalt(10)
