@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+
 const RoleSchema = new mongoose.Schema({
   _id: { type: String, required: true }, // Unique role ID (e.g., "admin")
   description: { type: String, required: true }, // Description of the role
